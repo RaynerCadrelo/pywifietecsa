@@ -1,0 +1,122 @@
+# coding=UTF-8
+
+import requests
+import configparser
+
+import os
+directorio = os.path.dirname(os.path.abspath(__file__))
+
+class RayWifiEtecsa:
+
+    def __init__(self):
+
+        self._configDataLogin = configparser.ConfigParser()
+        self._configDataLogin.read(directorio+'/.datalogin')
+
+
+    
+
+    def status(self): # retorna "Desconectado" / "Conectado"
+        try:
+            self._x=requests.get("http://www.cubadebate.cu/")
+        except:
+            return("Desconectado")
+        if self._x.text.count("Cubadebate"):
+            return("Conectado")
+        else:            
+            return("Desconectado")
+
+
+    
+
+
+    def login(self, username, password):
+        try:
+            self._x=requests.get("https://secure.etecsa.net:8443")
+        except:
+            return("Error de conexión")
+        body=self._x.text
+        body2=body.replace('\t','')
+        body2=body2.split('<form')[2]
+        lines=body2.split('\r\n')
+        elementForm={}
+        nombre=""
+        for line in lines:
+            if line.count("<input"):
+                for element in line.split(" "):
+                    if element.count("name="):
+                        nombre = element[5:].replace('"','')
+                    if element.count("value="):
+                        elementForm[nombre]=element[6:].replace('/>','').replace('"','')
+                        
+        elementForm['username'] = username
+        elementForm['password'] = password
+        
+        try:    
+            self._x=requests.post("https://secure.etecsa.net:8443//LoginServlet", data=elementForm, headers = {'content-type': 'application/x-www-form-urlencoded'})
+        except:
+            return("Error de conexión")
+
+        if self._x.status_code==200:
+            if self._x.text.count("Su tarjeta no tiene saldo disponible"):
+                return("Su tarjeta no tiene saldo disponible")
+            if self._x.text.count("No se pudo autorizar al usuario"):
+                return("No se pudo autorizar al usuario")
+            if self._x.text.count("Usted está conectado"):
+                pass
+                #print("Usted está conectado")
+                
+        else:
+            return("servidor no responde")
+
+        body=self._x.text
+        body2=body.split("ATTRIBUTE_UUID")[1].split("&remove=")[0].replace("+","").replace(" ","").replace("\r\n","").replace('"',"")
+        urlParam = "ATTRIBUTE_UUID"+body2+"&remove=1"
+
+        self._configDataLogin['DATA_LOGIN']={'DATA': urlParam}
+        with open(directorio+'/.datalogin', 'w') as configfile:
+            self._configDataLogin.write(configfile)
+
+        return("Usted está conectado")
+
+
+
+
+
+
+
+    def time(self):
+        try:
+            urlParam = self._configDataLogin['DATA_LOGIN']['DATA']
+            self._x=requests.post("https://secure.etecsa.net:8443/EtecsaQueryServlet", data="op=getLeftTime&"+urlParam, headers = {'content-type': 'application/x-www-form-urlencoded'})
+        except:
+            return("Error de conexión")
+        return(self._x.text)
+
+
+
+
+
+
+
+
+    def logout(self):
+        try:
+            urlParam = self._configDataLogin['DATA_LOGIN']['DATA']
+            self._x=requests.post("https://secure.etecsa.net:8443//LogoutServlet", data=urlParam, headers = {'content-type': 'application/x-www-form-urlencoded'})
+        except:
+            return("Error de conexión")
+
+        if self._x.status_code==200:
+            if self._x.text.count("SUCCESS"): #retorna esto: "logoutcallback('SUCCESS');"
+                return("Cerrado con éxito")
+            else:
+                return("Error al desconectar")
+
+
+
+
+
+
+
+        
