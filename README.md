@@ -29,5 +29,5 @@ Uso:
     $ python3 wifietecsa.py
 
 DESCRIPCIÓN:
-
-    ./imagen-descripcion.png
+    ![alt text](https://raw.githubusercontent.com/RaynerCadrelo/pywifietecsa/master/imagen-descripcion.png)
+    
