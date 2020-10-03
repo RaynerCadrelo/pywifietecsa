@@ -5,7 +5,9 @@ import configparser
 import os
 import raywifietecsaclass
 
-from gi.repository import Gtk, GdkPixbuf, Gdk
+import gi
+gi.require_version('Gtk', '3.0')
+from gi.repository import Gtk
 
 from os.path import dirname as updir
 
@@ -16,7 +18,7 @@ class WifiEtecsa:
 
     def __init__(self):
 
-        print(UI_FILE)
+        #print(UI_FILE)
         self.builder = Gtk.Builder()
         self.builder.add_from_file(UI_FILE)
         self.builder.connect_signals(self)
