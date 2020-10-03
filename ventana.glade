@@ -2,7 +2,21 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
-  <object class="GtkListStore" id="liststore1"/>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">imagenes/preferences-system-time-symbolic.symbolic.png</property>
+  </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">imagenes/network-wired-symbolic.symbolic.png</property>
+  </object>
+  <object class="GtkImage" id="image3">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">imagenes/system-users-symbolic.symbolic.png</property>
+  </object>
   <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">WIFI ETECSA</property>
@@ -49,10 +63,11 @@
             </child>
             <child>
               <object class="GtkButton" id="botonTiempo">
-                <property name="label" translatable="yes">tiempo</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="image">image1</property>
+                <property name="always_show_image">True</property>
                 <signal name="clicked" handler="on_botonTiempo_clicked" swapped="no"/>
               </object>
               <packing>
@@ -63,16 +78,29 @@
             </child>
             <child>
               <object class="GtkButton" id="botonEstado">
-                <property name="label" translatable="yes">estado</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="image">image2</property>
                 <signal name="clicked" handler="on_botonEstado_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">2</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="image">image3</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
               </packing>
             </child>
           </object>
@@ -124,4 +152,5 @@
       </object>
     </child>
   </object>
+  <object class="GtkListStore" id="liststore1"/>
 </interface>
