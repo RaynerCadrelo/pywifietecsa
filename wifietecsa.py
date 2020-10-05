@@ -4,6 +4,7 @@
 import configparser
 import os
 import raywifietecsaclass
+import usuarios
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -22,8 +23,8 @@ class WifiEtecsa:
         self.builder = Gtk.Builder()
         self.builder.add_from_file(UI_FILE)
         self.builder.connect_signals(self)
-        window = self.builder.get_object('window')
-        window.show_all()
+        self._window = self.builder.get_object('window')
+        self._window.show_all()
 
         self._loginLogout = self.builder.get_object('loginLogout')
         self._comboUsuarios = self.builder.get_object('comboUsuarios')
@@ -31,9 +32,10 @@ class WifiEtecsa:
         self._labelTiempo = self.builder.get_object('labelTiempo')
         self._botonTiempo = self.builder.get_object('botonTiempo')
         self._botonEstado = self.builder.get_object('botonEstado')
+        self._imagenConexionInternetSi = self.builder.get_object('conexionInternetSi')
+        self._imagenConexionInternetNo = self.builder.get_object('conexionInternetNo')
         
-        self._config = configparser.ConfigParser()
-        self._config.read(directorio+'/config.ini')        
+                
         self.cargarConfiguracion()
 
         self._raywifi = raywifietecsaclass.RayWifiEtecsa()
@@ -44,7 +46,8 @@ class WifiEtecsa:
     def on_loginLogout_button_press_event(self, loginLogout, gparam):
 
         if loginLogout.get_active():            
-            self._labelEstado.set_text(self._raywifi.logout())
+            cerrarSesion = self._raywifi.logout()            
+            self._labelEstado.set_text(cerrarSesion)
             self._labelTiempo.set_text("--:--:--")
         else:
             self._labelEstado.set_text("Iniciando...")
@@ -54,22 +57,33 @@ class WifiEtecsa:
             self._labelTiempo.set_text("")
 
     def on_botonTiempo_clicked(self, gparam):
-            self._labelTiempo.set_text(self._raywifi.time())
+        self._labelTiempo.set_text(self._raywifi.time())
 
     def on_botonEstado_clicked(self, gparam):
-            self._labelEstado.set_text(self._raywifi.status())
+        estado = self._raywifi.status()
+        if estado=="Conectado":
+            self._botonEstado.set_image(self._imagenConexionInternetSi)
+        else:
+            self._botonEstado.set_image(self._imagenConexionInternetNo)
+        self._labelEstado.set_text(estado)
 
+    def on_botonUsuarios_clicked(self, gparam):
+        self._ventanaUsuarios = usuarios.Ventana(self)
+        self._window.hide()
 
+    def mostrar(self):
+        self._window.show_all()
 
     def on_window_destroy(self, window):
-
         Gtk.main_quit()
 
 
 
 
     def cargarConfiguracion(self):
-
+        self._config = configparser.ConfigParser()
+        self._config.read(directorio+'/config.ini')
+        self._comboUsuarios.remove_all()
         for key in self._config['USERS']:
             if key.count("user"):
                 self._comboUsuarios.append(key[4:], self._config['USERS'][key])

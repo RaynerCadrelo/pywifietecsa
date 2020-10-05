@@ -2,15 +2,20 @@
 <!-- Generated with glade 3.22.1 -->
 <interface>
   <requires lib="gtk+" version="3.20"/>
+  <object class="GtkImage" id="conexionInternetNo">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">imagenes/applications-internet_dis.png</property>
+  </object>
+  <object class="GtkImage" id="conexionInternetSi">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">imagenes/applications-internet.png</property>
+  </object>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="pixbuf">imagenes/preferences-system-time-symbolic.symbolic.png</property>
-  </object>
-  <object class="GtkImage" id="image2">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">imagenes/network-wired-symbolic.symbolic.png</property>
   </object>
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
@@ -81,7 +86,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="image">image2</property>
+                <property name="image">conexionInternetNo</property>
                 <signal name="clicked" handler="on_botonEstado_clicked" swapped="no"/>
               </object>
               <packing>
@@ -91,11 +96,12 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="botonUsuarios">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="image">image3</property>
+                <signal name="clicked" handler="on_botonUsuarios_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
