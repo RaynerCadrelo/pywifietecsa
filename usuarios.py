@@ -56,8 +56,8 @@ class Ventana:
                 botonEditar.connect("clicked", self.on_botonEditar_clicked, self._config['USERS'][key], self._config['USERS'][ "PASS"+key[4:]])
                 imagenBotonBorrar=Gtk.Image()
                 imagenBotonEditar=Gtk.Image()
-                imagenBotonBorrar.set_from_file("imagenes/user-trash-symbolic.symbolic.png")
-                imagenBotonEditar.set_from_file("imagenes/text-editor-symbolic.symbolic.png")
+                imagenBotonBorrar.set_from_file(directorio+"/imagenes/user-trash-symbolic.symbolic.png")
+                imagenBotonEditar.set_from_file(directorio+"/imagenes/text-editor-symbolic.symbolic.png")
                 botonBorrar.set_image(imagenBotonBorrar)
                 botonEditar.set_image(imagenBotonEditar)
                 hbox.pack_start(botonBorrar, False, True, 0)
@@ -78,6 +78,7 @@ class Ventana:
                 a=a+1
         if self._proximoUsuarioBorrar in usuarios:
             del(usuarios[self._proximoUsuarioBorrar])
+            self._proximoUsuarioBorrar = ""
         if not soloBorrar:
             usuarios[self._usuarioNuevo.get_text()] = self._contrasenaNuevo.get_text() #agrega el nuevo usuario que está en las cajas de texto
         
@@ -88,7 +89,7 @@ class Ventana:
             datos['PASS'+str(a)] = con
             a=a+1
         config2['USERS']=datos
-        with open('config.ini', 'w') as configfile:
+        with open(directorio+'/config.ini', 'w') as configfile:
             config2.write(configfile)      
         self._usuarioNuevo.set_text("")
         self._contrasenaNuevo.set_text("")  
