@@ -1,6 +1,7 @@
 # coding=UTF-8
 
 import requests
+import lxml.html
 import configparser
 
 import os
@@ -14,7 +15,7 @@ class RayWifiEtecsa:
         self._configDataLogin.read(directorio+'/.datalogin')
 
 
-    
+
 
     def status(self): # retorna "Desconectado" / "Conectado"
         try:
@@ -23,11 +24,11 @@ class RayWifiEtecsa:
             return("Desconectado")
         if self._x.text.count("Cubadebate"):
             return("Conectado")
-        else:            
+        else:
             return("Desconectado")
 
 
-    
+
 
 
     def login(self, username, password):
@@ -36,24 +37,18 @@ class RayWifiEtecsa:
         except:
             return("Error de conexión")
         body=self._x.text
-        body2=body.replace('\t','')
-        body2=body2.split('<form')[2]
-        lines=body2.split('\r\n')
         elementForm={}
-        nombre=""
-        for line in lines:
-            if line.count("<input"):
-                for element in line.split(" "):
-                    if element.count("name="):
-                        nombre = element[5:].replace('"','')
-                    if element.count("value="):
-                        elementForm[nombre]=element[6:].replace('/>','').replace('"','')
-                        
+        root_element = lxml.html.fromstring(body)
+        form = root_element.xpath('/html/body/div/div/div/div/form')[0]
+        inputs = form.inputs
+        for a in inputs:
+            elementForm[ a.name ] = a.value
+
         elementForm['username'] = username
         elementForm['password'] = password
-        
-        try:    
-            self._x=requests.post("https://secure.etecsa.net:8443//LoginServlet", data=elementForm, headers = {'content-type': 'application/x-www-form-urlencoded'})
+
+        try:
+            self._x=requests.post(form.action, data=elementForm, headers = {'content-type': 'application/x-www-form-urlencoded'})
         except:
             return("Error de conexión")
 
@@ -65,7 +60,7 @@ class RayWifiEtecsa:
             if self._x.text.count("Usted está conectado"):
                 pass
                 #print("Usted está conectado")
-                
+
         else:
             return("servidor no responde")
 
@@ -119,4 +114,4 @@ class RayWifiEtecsa:
 
 
 
-        
+
