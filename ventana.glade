@@ -17,6 +17,11 @@
     <property name="can_focus">False</property>
     <property name="pixbuf">imagenes/preferences-system-time-symbolic.symbolic.png</property>
   </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">imagenes/saldo.png</property>
+  </object>
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -24,7 +29,7 @@
   </object>
   <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>
-    <property name="title" translatable="yes">WIFI ETECSA</property>
+    <property name="title" translatable="yes">PyWifiEtecsa</property>
     <signal name="destroy" handler="on_window_destroy" swapped="no"/>
     <child>
       <placeholder/>
@@ -39,7 +44,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="margin_top">10</property>
-            <property name="label" translatable="yes">WIFI ETECSA</property>
+            <property name="label" translatable="yes">PyWifiEtecsa</property>
             <attributes>
               <attribute name="weight" value="bold"/>
             </attributes>
@@ -71,6 +76,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Muestra el tiempo restante de la cuenta</property>
                 <property name="image">image1</property>
                 <property name="always_show_image">True</property>
                 <signal name="clicked" handler="on_botonTiempo_clicked" swapped="no"/>
@@ -86,6 +92,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Verificar si está conectado a internet o intranet</property>
                 <property name="image">conexionInternetNo</property>
                 <signal name="clicked" handler="on_botonEstado_clicked" swapped="no"/>
               </object>
@@ -100,6 +107,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Adiministrar las cuentas de usuarios</property>
                 <property name="image">image3</property>
                 <signal name="clicked" handler="on_botonUsuarios_clicked" swapped="no"/>
               </object>
@@ -107,6 +115,21 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="botonSaldo">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Recargar o enviar saldo</property>
+                <property name="image">image2</property>
+                <signal name="clicked" handler="on_botonSaldo_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
               </packing>
             </child>
           </object>
@@ -126,6 +149,7 @@
               <object class="GtkComboBoxText" id="comboUsuarios">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Seleccionar cuenta a operar</property>
                 <property name="hexpand">True</property>
                 <property name="active">0</property>
               </object>
@@ -139,6 +163,7 @@
               <object class="GtkSwitch" id="loginLogout">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">Iniciar o cerrar sesión</property>
                 <property name="valign">center</property>
                 <signal name="button-press-event" handler="on_loginLogout_button_press_event" swapped="no"/>
               </object>

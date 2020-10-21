@@ -13,7 +13,7 @@ import configparser
 from os.path import dirname as updir
 
 directorio = updir(os.path.abspath(__file__))
-UI_FILE = directorio+"/ventana 2.glade"
+UI_FILE = directorio+"/usuarios.glade"
 
 class Ventana:
 
