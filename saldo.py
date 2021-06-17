@@ -3,8 +3,7 @@
 
 import os
 import configparser
-import lxml.html
-import requests
+import raywifietecsaclass
 
 import gi
 gi.require_version('Gtk', '3.0')
@@ -46,72 +45,27 @@ class Ventana:
                 self.store.append([self._config['USERS'][key]])
         self.autocompletado.set_model(self.store)
         self.autocompletado.set_text_column(0)
-        #----Muestra todos los componentes de la ventana
+        # ----Muestra todos los componentes de la ventana
         self.window.show_all()
+
+        self._rayWifiEtecsa = wifietecsa._raywifi
 
     def on_window_destroy(self, window):
         self._wifietecsa.cargarConfiguracion()
         self._wifietecsa.mostrar()
 
     def on_botonTransferir_clicked(self, gparam):
-        try:
-            x4 = requests.get("https://www.portal.nauta.cu/useraaa/transfer_balance", headers = {'content-type': 'application/x-www-form-urlencoded', "User-agent":"Mozilla/5.0 (X11; Linux x86_64)"}, stream=True, timeout=5, cookies = self._wifietecsa.cookies)
-        except:
-            self.labelEstado.set_text("Error de conexión")
-        body4=x4.text
-        elementosRecarga={}
-        root_element4 = lxml.html.fromstring(body4)
-        form4 = root_element4.xpath('//form')[0] # //form
-        inputs4 = form4.inputs
-        for a in inputs4:
-            elementosRecarga[ a.name ] = a.value
-        elementosRecarga["id_cuenta"] = self.usuarioTransferir.get_text()
-        elementosRecarga["password_user"] = self._contrasena
-        elementosRecarga["transfer"] = self.cantidadTransferir.get_text()
-        elementosRecarga["action"] = "checkdata"
-
-        try:
-            x5 = requests.post("https://www.portal.nauta.cu/useraaa/transfer_balance", data=elementosRecarga, headers = {'content-type': 'application/x-www-form-urlencoded', "User-agent":"Mozilla/40.0 (X11; Linux x86_64)"}, stream=True, timeout=5, cookies = self._wifietecsa.cookies)
-        except:
-            self.labelEstado.set_text("Error de conexión")
-        body5=x5.text
-        if body5.count("msg_error"):
-            mensaje_error=body5.split('"msg_error">')[1].split("<")[0]
-            self.labelEstado.set_text(mensaje_error)
-        elif body5.count('"msg_message">'):
-            mensaje_mensaje=body5.split('"msg_message">')[1].split("<")[0]
-            self.labelEstado.set_text(mensaje_mensaje)
-        else:
-            self.labelEstado.set_text("Error desconocido")
-        root_element5 = lxml.html.fromstring(body5)
-        saldo = root_element5.xpath('//div[@class="card-panel"]/div/div/p')[0] # //form
-        self.labelSaldo.set_text(saldo.text_content())
+        mensaje, saldoActual =  self._rayWifiEtecsa.transferirSaldo(self.usuarioTransferir.get_text(), self.cantidadTransferir.get_text())
+        self.labelEstado.set_text(mensaje)
+        if saldoActual:
+            self.labelSaldo.set_text(saldoActual)
 
     def on_botonRecargar_clicked(self, gparam):
-        try:
-            x4 = requests.get("https://www.portal.nauta.cu/useraaa/recharge_account", headers = {'content-type': 'application/x-www-form-urlencoded', "User-agent":"Mozilla/5.0 (X11; Linux x86_64)"}, stream=True, timeout=5, cookies = self._wifietecsa.cookies)
-        except:
-            self.labelEstado.set_text("Error de conexión")
-        body4=x4.text
-        elementosRecarga={}
-        root_element4 = lxml.html.fromstring(body4)
-        form4 = root_element4.xpath('//form')[0] # //form
-        inputs4 = form4.inputs
-        for a in inputs4:
-            elementosRecarga[ a.name ] = a.value
-        elementosRecarga["recharge_code"] = self.numeroRecarga.get_text()
-        elementosRecarga["btn_submit"]="" # si no se pone no procede en el post
+        mensaje, saldoActual = self._rayWifiEtecsa.recargarCuenta(self.numeroRecarga.get_text())
+        self.labelEstado.set_text(mensaje)
+        if saldoActual:
+            self.labelSaldo.set_text(saldoActual)
 
-        x5 = requests.post("https://www.portal.nauta.cu/useraaa/recharge_account", data=elementosRecarga, headers = {'content-type': 'application/x-www-form-urlencoded', "User-agent":"Mozilla/40.0 (X11; Linux x86_64)"}, stream=True, timeout=5, cookies = self._wifietecsa.cookies)
-        body5=x5.text
-        if body5.count("msg_error"):
-            mensaje_error=body5.split('"msg_error">')[1].split("<")[0]
-            self.labelEstado.set_text(mensaje_error)
-        elif body5.count('"msg_message">'):
-            mensaje_mensaje=body5.split('"msg_message">')[1].split("<")[0]
-            self.labelEstado.set_text(mensaje_mensaje)
-        else:
-            self.labelEstado.set_text("Error desconocido")
 
 
 

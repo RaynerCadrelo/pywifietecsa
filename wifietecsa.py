@@ -37,7 +37,6 @@ class WifiEtecsa:
         self._imagenConexionInternetSi = self.builder.get_object('conexionInternetSi')
         self._imagenConexionInternetNo = self.builder.get_object('conexionInternetNo')
 
-
         self.cargarConfiguracion()
 
         self._raywifi = raywifietecsaclass.RayWifiEtecsa()
