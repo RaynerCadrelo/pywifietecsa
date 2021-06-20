@@ -1,13 +1,12 @@
 # coding=UTF-8
 
-
 import configparser
 import os
 import raywifietecsaclass
 import usuarios
 import captcha
 import saldo
-
+import __about__
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
@@ -16,12 +15,11 @@ from os.path import dirname as updir
 
 directorio = updir(os.path.abspath(__file__))
 UI_FILE = directorio+"/ventana.glade"
+os.environ["__version__"] = __about__.__version__
 
 class WifiEtecsa:
 
     def __init__(self):
-
-        #print(UI_FILE)
         self.builder = Gtk.Builder()
         self.builder.add_from_file(UI_FILE)
         self.builder.connect_signals(self)
@@ -43,10 +41,7 @@ class WifiEtecsa:
 
         self._saldo = ""
 
-
-
     def on_loginLogout_button_press_event(self, loginLogout, gparam):
-
         if loginLogout.get_active():
             cerrarSesion = self._raywifi.logout()
             self._labelEstado.set_text(cerrarSesion)
@@ -55,17 +50,17 @@ class WifiEtecsa:
             self._labelEstado.set_text("Iniciando...")
             usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
             contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
-            self._labelEstado.set_text(self._raywifi.login(usuario,contrasena))
+            self._labelEstado.set_text(self._raywifi.login(usuario, contrasena))
             self._labelTiempo.set_text("")
 
     def on_botonTiempo_clicked(self, gparam):
         usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
         contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
-        self._labelTiempo.set_text(self._raywifi.saldo(usuario,contrasena))
+        self._labelTiempo.set_text(self._raywifi.saldo(usuario, contrasena))
 
     def on_botonEstado_clicked(self, gparam):
         estado = self._raywifi.status()
-        if estado=="Conectado":
+        if estado == "Conectado":
             self._botonEstado.set_image(self._imagenConexionInternetSi)
         else:
             self._botonEstado.set_image(self._imagenConexionInternetNo)
@@ -91,10 +86,10 @@ class WifiEtecsa:
         self._window.show_all()
 
     def on_window_destroy(self, window):
+        self._config['SETTINGS']['last_user_id'] = self._comboUsuarios.get_active_id()
+        with open(directorio+'/config.ini', 'w') as configfile:
+            self._config.write(configfile)
         Gtk.main_quit()
-
-
-
 
     def cargarConfiguracion(self):
         self._config = configparser.ConfigParser()
@@ -103,33 +98,11 @@ class WifiEtecsa:
         for key in self._config['USERS']:
             if key.count("user"):
                 self._comboUsuarios.append(key[4:], self._config['USERS'][key])
-        self._comboUsuarios.set_active_id("1")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        self._comboUsuarios.set_active_id(self._config['SETTINGS']['last_user_id'])
+        self._labelEstado.set_text(f'Actualización: {os.environ["__version__"]}')
 
 
 def main(argv):
-
     wifiEtecsa = WifiEtecsa()
     Gtk.main()
 
