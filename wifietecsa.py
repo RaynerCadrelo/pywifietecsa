@@ -84,6 +84,11 @@ class WifiEtecsa:
 
     def mostrar(self):
         self._window.show_all()
+        
+    def on_comboUsuarios_changed(self, gparam):
+        self._config['SETTINGS']['last_user_id'] = self._comboUsuarios.get_active_id()
+        with open(directorio+'/config.ini', 'w') as configfile:
+            self._config.write(configfile)
 
     def on_window_destroy(self, window):
         self._config['SETTINGS']['last_user_id'] = self._comboUsuarios.get_active_id()

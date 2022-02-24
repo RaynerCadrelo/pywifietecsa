@@ -167,6 +167,7 @@
                 <property name="tooltip-text" translatable="yes">Seleccionar cuenta a operar</property>
                 <property name="hexpand">True</property>
                 <property name="active">0</property>
+                <signal name="changed" handler="on_comboUsuarios_changed" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
