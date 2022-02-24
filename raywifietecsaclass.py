@@ -110,7 +110,10 @@ class RayWifiEtecsa:
             return("Error de conexión")
 
         if self._x.status_code==200:
-            if self._x.text.count("Su tarjeta no tiene saldo disponible"):
+            print(self._x.text)
+            if self._x.text.count("Usted ha realizado muchos intentos"):
+                return("Usted ha realizado muchos intentos")
+            if self._x.text.count("El saldo de su cuenta es insuficiente"):
                 return("Su tarjeta no tiene saldo disponible")
             if self._x.text.count("No se pudo autorizar al usuario"):
                 return("No se pudo autorizar al usuario")

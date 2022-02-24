@@ -81,7 +81,8 @@ def main(argv):
             return
 
         if x.status_code==200:
-            if x.text.count("Su tarjeta no tiene saldo disponible"):
+            print x.text
+            if x.text.count("El saldo de su cuenta es insuficiente"):
                 print("Su tarjeta no tiene saldo disponible")
                 return
             if x.text.count("No se pudo autorizar al usuario"):
