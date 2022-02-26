@@ -69,7 +69,7 @@ class WifiEtecsa:
     def on_botonTiempo_clicked(self, gparam):
         usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
         contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
-        self._labelTiempo.set_text(self._raywifi.saldo(usuario, contrasena))
+        threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, )).start()
 
     def on_botonEstado_clicked(self, gparam):
         estado = self._raywifi.status()
