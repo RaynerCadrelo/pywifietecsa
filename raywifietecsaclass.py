@@ -81,8 +81,21 @@ class RayWifiEtecsa:
                 segundo_str = "0" + str(segundo)
             else:
                 segundo_str = str(segundo)
+            # formatear str dinero a 0.00 CUP
+            valor, moneda, *arg = dinero_str.split(" ")
+            if valor.count('.'):
+                pesos, centavos = valor.split(".")
+            else:
+                pesos = valor
+                centavos = ""
+            if len(centavos) == 1:
+                centavos += "0"
+            elif len(centavos) == 0:
+                centavos += "00"
+            dinero_str_formateado = pesos + "." + centavos + " " + moneda
             tiempo_str = hora_str + ":"+minuto_str + ":" + segundo_str #tiempo en el formato 1:59:59
-            return( tiempo_str +"  ("+dinero_str+") ")
+            # formato de salida "00:03:25 (0.10 CUP)"
+            return( tiempo_str +"  ("+dinero_str_formateado+") ")
         return("Usuarios o Contraseña\nincorrecto")
 
 

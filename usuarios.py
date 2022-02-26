@@ -2,10 +2,11 @@
 
 
 import os
+import threading
 
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, GLib
 
 import configparser
 
@@ -32,7 +33,16 @@ class Ventana:
         self._proximoUsuarioBorrar=""        
         self.actualizar()
 
-        
+    def actualizar_saldos(self, labelSaldo, usuario, contrasena):
+        saldo = self._wifietecsa._raywifi.saldo(usuario, contrasena)
+        horas, minutos = saldo.split(":")[0:2]
+        color = "darkgreen"
+        minutos = int(minutos) + int(horas)*60
+        if minutos <= 5:
+            color = "red"
+        if minutos == 0:
+            color = "black"
+        GLib.idle_add(labelSaldo.set_markup, f'<b><span color=\"{color}\">{saldo}</span></b>')
 
     def actualizar(self):
         self._config = configparser.ConfigParser()
@@ -48,8 +58,13 @@ class Ventana:
                 hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
                 self._row[a].add(hbox)
                 labelUsuario = Gtk.Label()
+                labelVencimiento = Gtk.Label()
+                labelSaldo = Gtk.Label()
+                #labelSaldo.set_markup('<span color=\"darkgreen\">25.00</span>')
+                threading.Thread(target=self.actualizar_saldos, args=(labelSaldo,self._config['USERS'][key], self._config['USERS'][ "PASS"+key[4:]])).start()
                 labelUsuario.set_text(self._config['USERS'][key])
                 hbox.pack_start(labelUsuario, True, True, 0)
+                hbox.pack_start(labelSaldo, False, True, 0)
                 botonBorrar=Gtk.Button()
                 botonBorrar.connect("clicked", self.on_botonBorrar_clicked,self._config['USERS'][key])
                 botonEditar=Gtk.Button()
@@ -89,6 +104,7 @@ class Ventana:
             datos['PASS'+str(a)] = con
             a=a+1
         config2['USERS']=datos
+        config2['SETTINGS'] = {"last_user_id": self._wifietecsa._comboUsuarios.get_active_id()}
         with open(directorio+'/config.ini', 'w') as configfile:
             config2.write(configfile)      
         self._usuarioNuevo.set_text("")

@@ -38,7 +38,7 @@ class WifiEtecsa:
         self.cargarConfiguracion()
 
         self._raywifi = raywifietecsaclass.RayWifiEtecsa()
-
+        self._cargandoConfig = False
         self._saldo = ""
 
     def on_loginLogout_button_press_event(self, loginLogout, gparam):
@@ -86,9 +86,10 @@ class WifiEtecsa:
         self._window.show_all()
         
     def on_comboUsuarios_changed(self, gparam):
-        self._config['SETTINGS']['last_user_id'] = self._comboUsuarios.get_active_id()
-        with open(directorio+'/config.ini', 'w') as configfile:
-            self._config.write(configfile)
+        if not self._cargandoConfig:
+            self._config['SETTINGS']['last_user_id'] = self._comboUsuarios.get_active_id()
+            with open(directorio+'/config.ini', 'w') as configfile:
+                self._config.write(configfile)
 
     def on_window_destroy(self, window):
         self._config['SETTINGS']['last_user_id'] = self._comboUsuarios.get_active_id()
@@ -97,6 +98,7 @@ class WifiEtecsa:
         Gtk.main_quit()
 
     def cargarConfiguracion(self):
+        self._cargandoConfig = True
         self._config = configparser.ConfigParser()
         self._config.read(directorio+'/config.ini')
         self._comboUsuarios.remove_all()
@@ -105,6 +107,7 @@ class WifiEtecsa:
                 self._comboUsuarios.append(key[4:], self._config['USERS'][key])
         self._comboUsuarios.set_active_id(self._config['SETTINGS']['last_user_id'])
         self._labelEstado.set_text(f'Actualización: {os.environ["__version__"]}')
+        self._cargandoConfig = False
 
 
 def main(argv):
