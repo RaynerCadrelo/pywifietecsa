@@ -60,9 +60,9 @@ class Ventana:
                 labelUsuario = Gtk.Label()
                 labelVencimiento = Gtk.Label()
                 labelSaldo = Gtk.Label()
-                #labelSaldo.set_markup('<span color=\"darkgreen\">25.00</span>')
                 threading.Thread(target=self.actualizar_saldos, args=(labelSaldo,self._config['USERS'][key], self._config['USERS'][ "PASS"+key[4:]])).start()
-                labelUsuario.set_text(self._config['USERS'][key])
+                usuario = self._config['USERS'][key]
+                labelUsuario.set_markup(f'<b><span color=\"{"navy" if usuario.count("com.cu") else "dodgerblue"}\">{usuario}</span></b>')
                 hbox.pack_start(labelUsuario, True, True, 0)
                 hbox.pack_start(labelSaldo, False, True, 0)
                 botonBorrar=Gtk.Button()

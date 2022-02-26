@@ -2,6 +2,7 @@
 
 import configparser
 import os
+import threading
 import raywifietecsaclass
 import usuarios
 import captcha
@@ -9,7 +10,7 @@ import saldo
 import __about__
 import gi
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk
+from gi.repository import Gtk, GLib
 
 from os.path import dirname as updir
 
@@ -52,6 +53,18 @@ class WifiEtecsa:
             contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
             self._labelEstado.set_text(self._raywifi.login(usuario, contrasena))
             self._labelTiempo.set_text("")
+            threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, )).start()
+            
+    def actualizarSaldo(self, usuario, contrasena):
+        saldo = self._raywifi.saldo(usuario, contrasena)
+        horas, minutos = saldo.split(":")[0:2]
+        color = "darkgreen"
+        minutos = int(minutos) + int(horas)*60
+        if minutos <= 5:
+            color = "red"
+        if minutos == 0:
+            color = "black"
+        GLib.idle_add(self._labelTiempo.set_markup, f'<b><span color=\"{color}\">{saldo}</span></b>')
 
     def on_botonTiempo_clicked(self, gparam):
         usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
@@ -104,7 +117,7 @@ class WifiEtecsa:
         self._comboUsuarios.remove_all()
         for key in self._config['USERS']:
             if key.count("user"):
-                self._comboUsuarios.append(key[4:], self._config['USERS'][key])
+                self._comboUsuarios.append(key[4:], self._config["USERS"][key])
         self._comboUsuarios.set_active_id(self._config['SETTINGS']['last_user_id'])
         self._labelEstado.set_text(f'Actualización: {os.environ["__version__"]}')
         self._cargandoConfig = False
