@@ -41,6 +41,9 @@ class WifiEtecsa:
         self._raywifi = raywifietecsaclass.RayWifiEtecsa()
         self._cargandoConfig = False
         self._saldo = ""
+        usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
+        contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
+        threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, )).start()
 
     def on_loginLogout_button_press_event(self, loginLogout, gparam):
         if loginLogout.get_active():
@@ -56,6 +59,7 @@ class WifiEtecsa:
             threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, )).start()
             
     def actualizarSaldo(self, usuario, contrasena):
+        GLib.idle_add(self._labelTiempo.set_markup, f'<b><span color=\"goldenrod\">--:--:--</span></b>')
         saldo = self._raywifi.saldo(usuario, contrasena)
         horas, minutos = saldo.split(":")[0:2]
         color = "darkgreen"
@@ -99,6 +103,9 @@ class WifiEtecsa:
         self._window.show_all()
         
     def on_comboUsuarios_changed(self, gparam):
+        usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
+        contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
+        threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, )).start()
         if not self._cargandoConfig:
             self._config['SETTINGS']['last_user_id'] = self._comboUsuarios.get_active_id()
             with open(directorio+'/config.ini', 'w') as configfile:
