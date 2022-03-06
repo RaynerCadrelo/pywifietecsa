@@ -46,19 +46,19 @@ class WifiEtecsa:
         threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, )).start()
 
     def on_loginLogout_button_press_event(self, loginLogout, gparam):
+        usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
+        contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
         if loginLogout.get_active():
             cerrarSesion = self._raywifi.logout()
             self._labelEstado.set_text(cerrarSesion)
-            self._labelTiempo.set_text("--:--:--")
+            threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, "dimgray", )).start()
         else:
             self._labelEstado.set_text("Iniciando...")
-            usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
-            contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
             self._labelEstado.set_text(self._raywifi.login(usuario, contrasena))
             self._labelTiempo.set_text("")
             threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, )).start()
             
-    def actualizarSaldo(self, usuario, contrasena):
+    def actualizarSaldo(self, usuario, contrasena, color_font=""):
         GLib.idle_add(self._labelTiempo.set_markup, f'<b><span color=\"goldenrod\">--:--:--</span></b>')
         saldo = self._raywifi.saldo(usuario, contrasena)
         horas, minutos = saldo.split(":")[0:2]
@@ -68,6 +68,8 @@ class WifiEtecsa:
             color = "red"
         if minutos == 0:
             color = "black"
+        if color_font:
+            color = color_font
         GLib.idle_add(self._labelTiempo.set_markup, f'<b><span color=\"{color}\">{saldo}</span></b>')
 
     def on_botonTiempo_clicked(self, gparam):
