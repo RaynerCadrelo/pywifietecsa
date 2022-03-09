@@ -26,7 +26,6 @@ class WifiEtecsa:
         self.builder.connect_signals(self)
         self._window = self.builder.get_object('window')
         self._window.show_all()
-
         self._loginLogout = self.builder.get_object('loginLogout')
         self._comboUsuarios = self.builder.get_object('comboUsuarios')
         self._labelEstado = self.builder.get_object('labelEstado')
@@ -34,10 +33,9 @@ class WifiEtecsa:
         self._botonTiempo = self.builder.get_object('botonTiempo')
         self._botonEstado = self.builder.get_object('botonEstado')
         self._imagenConexionInternetSi = self.builder.get_object('conexionInternetSi')
-        self._imagenConexionInternetNo = self.builder.get_object('conexionInternetNo')
-
+        self._imagenConexionInternetNo = self.builder.get_object('conexionInternetNo')        
+        self._imagenConexionInternetEsperar = self.builder.get_object('conexionInternetEsperar')
         self.cargarConfiguracion()
-
         self._raywifi = raywifietecsaclass.RayWifiEtecsa()
         self._cargandoConfig = False
         self._saldo = ""
@@ -71,6 +69,14 @@ class WifiEtecsa:
         if color_font:
             color = color_font
         GLib.idle_add(self._labelTiempo.set_markup, f'<b><span color=\"{color}\">{saldo}</span></b>')
+        
+    def actualizarEstado(self):
+        estado = self._raywifi.status()
+        if estado == "Conectado":
+            GLib.idle_add(self._botonEstado.set_image, self._imagenConexionInternetSi)
+        else:
+            GLib.idle_add(self._botonEstado.set_image, self._imagenConexionInternetNo)
+        GLib.idle_add(self._labelEstado.set_text, estado)
 
     def on_botonTiempo_clicked(self, gparam):
         usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
@@ -78,12 +84,8 @@ class WifiEtecsa:
         threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, )).start()
 
     def on_botonEstado_clicked(self, gparam):
-        estado = self._raywifi.status()
-        if estado == "Conectado":
-            self._botonEstado.set_image(self._imagenConexionInternetSi)
-        else:
-            self._botonEstado.set_image(self._imagenConexionInternetNo)
-        self._labelEstado.set_text(estado)
+        self._botonEstado.set_image(self._imagenConexionInternetEsperar)
+        threading.Thread(target=self.actualizarEstado, args=( )).start()
 
     def on_botonUsuarios_clicked(self, gparam):
         self._ventanaUsuarios = usuarios.Ventana(self)
