@@ -32,9 +32,7 @@ class WifiEtecsa:
         self._labelTiempo = self.builder.get_object('labelTiempo')
         self._botonTiempo = self.builder.get_object('botonTiempo')
         self._botonEstado = self.builder.get_object('botonEstado')
-        self._imagenConexionInternetSi = self.builder.get_object('conexionInternetSi')
-        self._imagenConexionInternetNo = self.builder.get_object('conexionInternetNo')        
-        self._imagenConexionInternetEsperar = self.builder.get_object('conexionInternetEsperar')
+        self._botonEstadoIcon = self.builder.get_object('image2')
         self.cargarConfiguracion()
         self._raywifi = raywifietecsaclass.RayWifiEtecsa()
         self._cargandoConfig = False
@@ -73,9 +71,9 @@ class WifiEtecsa:
     def actualizarEstado(self):
         estado = self._raywifi.status()
         if estado == "Conectado":
-            GLib.idle_add(self._botonEstado.set_image, self._imagenConexionInternetSi)
+            GLib.idle_add(self._botonEstadoIcon.set_from_icon_name, "network-wired-symbolic", Gtk.IconSize.BUTTON)
         else:
-            GLib.idle_add(self._botonEstado.set_image, self._imagenConexionInternetNo)
+            GLib.idle_add(self._botonEstadoIcon.set_from_icon_name, "network-wired-disconnected-symbolic", Gtk.IconSize.BUTTON)
         GLib.idle_add(self._labelEstado.set_text, estado)
 
     def on_botonTiempo_clicked(self, gparam):
@@ -84,7 +82,7 @@ class WifiEtecsa:
         threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, )).start()
 
     def on_botonEstado_clicked(self, gparam):
-        self._botonEstado.set_image(self._imagenConexionInternetEsperar)
+        self._botonEstadoIcon.set_from_icon_name("network-wired-acquiring-symbolic", Gtk.IconSize.BUTTON)
         threading.Thread(target=self.actualizarEstado, args=( )).start()
 
     def on_botonUsuarios_clicked(self, gparam):
