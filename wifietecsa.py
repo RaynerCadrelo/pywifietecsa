@@ -46,11 +46,20 @@ class WifiEtecsa:
         contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
         if loginLogout.get_active():
             cerrarSesion = self._raywifi.logout()
+            if cerrarSesion == "Cerrado con éxito":
+                self._botonEstadoIcon.set_from_icon_name("network-wired-disconnected-symbolic", Gtk.IconSize.BUTTON)
+            else:
+                self._botonEstadoIcon.set_from_icon_name("network-wired-error-symbolic", Gtk.IconSize.BUTTON)
             self._labelEstado.set_text(cerrarSesion)
             threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, "dimgray", )).start()
         else:
             self._labelEstado.set_text("Iniciando...")
-            self._labelEstado.set_text(self._raywifi.login(usuario, contrasena))
+            textConexion = self._raywifi.login(usuario, contrasena)
+            self._labelEstado.set_text(textConexion)
+            if textConexion == "Usted está conectado":
+                self._botonEstadoIcon.set_from_icon_name("network-wired-symbolic", Gtk.IconSize.BUTTON)
+            else:
+                self._botonEstadoIcon.set_from_icon_name("network-wired-error-symbolic", Gtk.IconSize.BUTTON)
             self._labelTiempo.set_text("")
             threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, )).start()
             

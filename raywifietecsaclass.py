@@ -137,7 +137,10 @@ class RayWifiEtecsa:
             return("servidor no responde")
 
         body=self._x.text
-        body2=body.split("ATTRIBUTE_UUID")[1].split("&remove=")[0].replace("+","").replace(" ","").replace("\r\n","").replace('"',"")
+        try:
+            body2=body.split("ATTRIBUTE_UUID")[1].split("&remove=")[0].replace("+","").replace(" ","").replace("\r\n","").replace('"',"")
+        except:
+            return("Error de conexión")
         urlParam = "ATTRIBUTE_UUID"+body2+"&remove=1"
 
         self._configDataLogin['DATA_LOGIN']={'DATA': urlParam}
