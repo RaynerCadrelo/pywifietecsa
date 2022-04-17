@@ -118,7 +118,7 @@
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="icon-name">appointment-soon-symbolic</property>
+                    <property name="icon-name">preferences-system-time-symbolic</property>
                   </object>
                 </child>
               </object>
@@ -162,7 +162,7 @@
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="icon-name">screensaver-switch-users-symbolic</property>
+                    <property name="icon-name">system-users-symbolic</property>
                   </object>
                 </child>
               </object>
