@@ -5,8 +5,6 @@ import os
 import threading
 import raywifietecsaclass
 import usuarios
-import captcha
-import saldo
 import __about__
 import gi
 gi.require_version('Gtk', '3.0')
@@ -18,6 +16,7 @@ directorio = updir(os.path.abspath(__file__))
 UI_FILE = directorio+"/ventana.glade"
 os.environ["__version__"] = __about__.__version__
 
+
 class WifiEtecsa:
 
     def __init__(self):
@@ -26,6 +25,7 @@ class WifiEtecsa:
         self.builder.connect_signals(self)
         self._window = self.builder.get_object('window')
         self._window.show_all()
+        self._ventanaUsuarios = usuarios.Ventana(self, Gtk, GLib, self.builder)
         self._loginLogout = self.builder.get_object('loginLogout')
         self._comboUsuarios = self.builder.get_object('comboUsuarios')
         self._labelEstado = self.builder.get_object('labelEstado')
@@ -62,7 +62,7 @@ class WifiEtecsa:
                 self._botonEstadoIcon.set_from_icon_name("network-wired-error-symbolic", Gtk.IconSize.BUTTON)
             self._labelTiempo.set_text("")
             threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, )).start()
-            
+
     def actualizarSaldo(self, usuario, contrasena, color_font=""):
         GLib.idle_add(self._labelTiempo.set_markup, f'<b><span color=\"goldenrod\">--:--:--</span></b>')
         saldo = self._raywifi.saldo(usuario, contrasena)
@@ -76,7 +76,7 @@ class WifiEtecsa:
         if color_font:
             color = color_font
         GLib.idle_add(self._labelTiempo.set_markup, f'<b><span color=\"{color}\">{saldo}</span></b>')
-        
+
     def actualizarEstado(self):
         estado = self._raywifi.status()
         if estado == "Conectado":
@@ -95,8 +95,7 @@ class WifiEtecsa:
         threading.Thread(target=self.actualizarEstado, args=( )).start()
 
     def on_botonUsuarios_clicked(self, gparam):
-        self._ventanaUsuarios = usuarios.Ventana(self)
-        self._window.hide()
+        self._ventanaUsuarios.mostrarVentana()
 
     def on_botonSaldo_clicked(self, gparam):
         usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
@@ -111,8 +110,9 @@ class WifiEtecsa:
         self._window.hide()
 
     def mostrar(self):
-        self._window.show_all()
-        
+        # self._window.show_all()
+        pass
+
     def on_comboUsuarios_changed(self, gparam):
         usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
         contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
@@ -123,6 +123,9 @@ class WifiEtecsa:
                 self._config.write(configfile)
 
     def on_window_destroy(self, window):
+        print("destruyendo")
+        self._config = configparser.ConfigParser()
+        self._config.read(directorio+'/config.ini')
         self._config['SETTINGS']['last_user_id'] = self._comboUsuarios.get_active_id()
         with open(directorio+'/config.ini', 'w') as configfile:
             self._config.write(configfile)
