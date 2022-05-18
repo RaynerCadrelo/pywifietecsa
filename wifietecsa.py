@@ -97,18 +97,6 @@ class WifiEtecsa:
     def on_botonUsuarios_clicked(self, gparam):
         self._ventanaUsuarios.mostrarVentana()
 
-    def on_botonSaldo_clicked(self, gparam):
-        usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
-        contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
-        self._ventanaCaptcha = captcha.Ventana(self, usuario, contrasena)
-        self._window.hide()
-
-    def cargarVentanaSaldo(self):
-        usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
-        contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
-        self._ventanaSaldo = saldo.Ventana(self, usuario, contrasena)
-        self._window.hide()
-
     def mostrar(self):
         # self._window.show_all()
         pass
