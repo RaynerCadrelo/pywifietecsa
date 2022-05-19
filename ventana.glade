@@ -924,7 +924,7 @@ para más opciones</property>
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="icon-name">mail-send-receive-symbolic</property>
+                    <property name="icon-name">open-menu-symbolic</property>
                   </object>
                 </child>
               </object>

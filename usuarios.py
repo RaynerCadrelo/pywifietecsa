@@ -21,6 +21,7 @@ class Ventana:
         self._listbox = self.builder.get_object('listbox')
         self._listbox.connect("row-activated", self.usuarioSeleccionado)
         self._row = []
+        self._rowSeleccionado = None
         self._botonBorrar = self.builder.get_object('btBorrarCuenta')
         self._botonBorrar.connect("clicked", self.on_botonBorrar_clicked)
         self._nombreUsuarioEditar = self.builder.get_object('nombreUsuarioEditar')
@@ -74,8 +75,8 @@ class Ventana:
         # if self._row:
         #     self.usuarioSeleccionado(None, self._row[0])
 
-    def actualizar_saldos(self, labelSaldo, labelSaldoMarkup, usuario, contrasena):
-        saldo = self._wifietecsa._raywifi.saldo(usuario, contrasena)
+    def actualizar_saldos(self, row):
+        saldo = self._wifietecsa._raywifi.saldo(row._user, row._pwd)
         horas, minutos = saldo.split(":")[0:2]
         color = "darkgreen"
         minutos = int(minutos) + int(horas) * 60
@@ -83,8 +84,12 @@ class Ventana:
             color = "red"
         if minutos == 0:
             color = "black"
-        labelSaldoMarkup = f'<b><span color=\"{color}\">{saldo}</span></b>'
-        self.GLib.idle_add(labelSaldo.set_markup, labelSaldoMarkup)
+        row._labelSaldoMarkup = f'<b><span color=\"{color}\">{saldo}</span></b>'
+        self.GLib.idle_add(row._labelSaldo.set_markup, row._labelSaldoMarkup)
+
+    def actualizar_todos_saldos(self):
+        for row in self._row:
+            self.actualizar_saldos(row)
 
     def actualizar(self, gparam=None):
         self._config = configparser.ConfigParser()
@@ -109,27 +114,28 @@ class Ventana:
 
     def anadirUnoInterfaz(self, usuario, contrasena):
         self._row.append(self.Gtk.ListBoxRow())
-        self._row[-1].user = usuario
-        self._row[-1].pwd = contrasena
         hbox = self.Gtk.Box(orientation=self.Gtk.Orientation.HORIZONTAL, spacing=5)
         hbox.show()
         self._row[-1].add(hbox)
         labelUsuario = self.Gtk.Label()
         labelUsuario.show()
-        labelSaldo = self.Gtk.Label()
-        labelSaldo.show()
-        self._row[-1]._labelSaldoMarkup = ""
-        threading.Thread(target=self.actualizar_saldos, args=(labelSaldo, self._row[-1]._labelSaldoMarkup, usuario, contrasena)).start()
+        self._row[-1]._user = usuario
+        self._row[-1]._pwd = contrasena
+        self._row[-1]._labelSaldo = self.Gtk.Label()
+        self._row[-1]._labelSaldo.show()
+        self._row[-1]._labelSaldoMarkup = [""]
+        threading.Thread(target=self.actualizar_saldos, args=(self._row[-1],)).start()
         labelUsuario.set_markup(f'<b><span color=\"{"navy" if usuario.count("com.cu") else "dodgerblue"}\">{usuario}</span></b>')
         hbox.pack_start(labelUsuario, True, True, 0)
-        hbox.pack_start(labelSaldo, False, True, 0)
+        hbox.pack_start(self._row[-1]._labelSaldo, False, True, 0)
         self._listbox.add(self._row[-1])
         self._row[-1].show()
 
     def usuarioSeleccionado(self, lb, lbr):
-        self.nombre_usuario_seleccionado = lbr.user
-        self._nombreUsuarioEditar.set_text(lbr.user)
-        self._contrasenaUsuarioEditar.set_text(lbr.pwd)
+        self._rowSeleccionado = lbr
+        self.nombre_usuario_seleccionado = lbr._user
+        self._nombreUsuarioEditar.set_text(lbr._user)
+        self._contrasenaUsuarioEditar.set_text(lbr._pwd)
         self.GLib.idle_add(self._labelEstadoCaptcha.set_text, "Escriba el código captcha\npara más opciones")
         self.recargarCaptcha()
         self._boxPanel.show()
@@ -189,6 +195,8 @@ class Ventana:
         self.transferiendo = False
         if "satisfactoriamente" in mensaje:
             self._lbEstadoTransferirSaldo.set_markup(f"<b><span color='green'>{mensaje}</span></b>")
+            self._usuarioTransferir.set_text("")
+            self._cantidadTransferir.set_text("")
         else:
             _mensaje = mensaje.replace('. ', '.\n')  # Hacer un salto de línea donde hay punto
             self._lbEstadoTransferirSaldo.set_markup(f"<b><span color='red'>{_mensaje}</span></b>")
@@ -203,6 +211,8 @@ class Ventana:
         if minutos == 0:
             color = "black"
         self.GLib.idle_add(self._lbEstado.set_markup, f'<b><span color=\"{color}\">{saldo}</span></b>')
+        self.actualizar_todos_saldos()
+        self.GLib.idle_add(self._lbEstado.set_markup, self._rowSeleccionado._labelSaldoMarkup)
 
     def on_botonRecargar_clicked(self, gparam):
         threading.Thread(target=self.recargarSaldo, args=()).start()
