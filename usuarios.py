@@ -59,6 +59,11 @@ class Ventana:
         self._horaSeg = None
         self._boxPanel = self.builder.get_object('boxPanel')
         self._boxOtrasOpciones = self.builder.get_object("boxOtrasOpciones")
+        self._popoverMenu = self.builder.get_object("popoverMenu")
+        self._btMenu = self.builder.get_object("botonMenu")
+        self._btMenu.connect("clicked", self.on_menu_clicked)
+        self._btRefresh = self.builder.get_object("btRefresh")
+        self._btRefresh.connect("clicked", self.on_refresh_clicked)
 
         #-----Carga la lista de autocompletado
         self._autocompletado = self.builder.get_object('autocompetadoUsuarios')
@@ -285,6 +290,13 @@ class Ventana:
         self._boxPanel.hide()
         self._boxOtrasOpciones.hide()
         self.actualizar()
+
+    def on_menu_clicked(self, gparam):
+        self._popoverMenu.popup()
+        
+    def on_refresh_clicked(self, gparam):
+        self.actualizar()
+        self._boxPanel.hide()
 
     # def on_botonRecargar_clicked(self, gparam):
     #     mensaje, saldoActual = self._wifietecsa._raywifi.recargarCuenta(self._numeroRecarga.get_text())

@@ -22,6 +22,16 @@
     <property name="can-focus">False</property>
     <property name="icon-name">reload</property>
   </object>
+  <object class="GtkImage" id="imgActualizar">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">browser-download-symbolic</property>
+  </object>
+  <object class="GtkImage" id="imgRefresh">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">view-refresh-symbolic</property>
+  </object>
   <object class="GtkWindow" id="usuarios">
     <property name="can-focus">False</property>
     <child>
@@ -636,10 +646,26 @@ para más opciones</property>
         <property name="can-focus">False</property>
         <property name="show-close-button">True</property>
         <child>
-          <placeholder/>
-        </child>
-        <child>
-          <placeholder/>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <child>
+              <object class="GtkButton" id="btRefresh">
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="image">imgRefresh</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="pack-type">end</property>
+          </packing>
         </child>
       </object>
     </child>
@@ -913,12 +939,11 @@ para más opciones</property>
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="botonSaldo">
+              <object class="GtkButton" id="botonMenu">
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="focus-on-click">False</property>
                 <property name="receives-default">True</property>
-                <property name="tooltip-text" translatable="yes">Recargar o enviar saldo</property>
                 <signal name="clicked" handler="on_botonSaldo_clicked" swapped="no"/>
                 <child>
                   <object class="GtkImage">
@@ -938,6 +963,52 @@ para más opciones</property>
           <packing>
             <property name="pack-type">end</property>
           </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkPopover" id="popoverMenu">
+    <property name="can-focus">False</property>
+    <property name="relative-to">botonMenu</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkBox">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <child>
+              <object class="GtkButton">
+                <property name="label" translatable="yes">Actualizar</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="image">imgActualizar</property>
+                <property name="always-show-image">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <placeholder/>
+        </child>
+        <child>
+          <placeholder/>
         </child>
       </object>
     </child>
