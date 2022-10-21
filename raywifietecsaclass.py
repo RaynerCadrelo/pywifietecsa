@@ -258,7 +258,7 @@ class RayWifiEtecsa:
 
 
     #return([ mensaje, saldo_actual ])
-    def transferirSaldo(self, usuarioRecibir, cantidadRecibir):
+    def transferirSaldo(self, usuarioRecibir, cantidadRecibir, contrasena):
         try:
             x4 = requests.get(self._linkTransferir, headers = self._headers, stream=True, timeout=5, cookies = self._cookies)
         except:
@@ -271,7 +271,7 @@ class RayWifiEtecsa:
         for a in inputs4:
             elementosRecarga[ a.name ] = a.value
         elementosRecarga["id_cuenta"] = usuarioRecibir
-        elementosRecarga["password_user"] = self._portalContrasena
+        elementosRecarga["password_user"] = contrasena
         elementosRecarga["transfer"] = cantidadRecibir
         elementosRecarga["action"] = "checkdata"
 
@@ -324,8 +324,3 @@ class RayWifiEtecsa:
             return(mensaje_mensaje,"")
         else:
             return("Error desconocido","")
-
-
-
-
-
