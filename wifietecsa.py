@@ -59,7 +59,7 @@ class WifiEtecsa:
             if textConexion == "Usted está conectado":
                 self._botonEstadoIcon.set_from_icon_name("network-wired-symbolic", Gtk.IconSize.BUTTON)
             else:
-                self._botonEstadoIcon.set_from_icon_name("network-wired-error-symbolic", Gtk.IconSize.BUTTON)
+                self._botonEstadoIcon.set_from_icon_name("network-wired-disconnected-symbolic", Gtk.IconSize.BUTTON)
             self._labelTiempo.set_text("")
             threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, )).start()
 

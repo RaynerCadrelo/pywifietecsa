@@ -303,6 +303,7 @@ class Ventana:
     #     self._lbEstadoRecargarSaldo.set_text(mensaje)
 
     def ocultarVentana(self, *gparam):
+        self._wifietecsa.cargarConfiguracion()
         self._window.hide()
         return True
 
