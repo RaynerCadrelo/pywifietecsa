@@ -174,7 +174,7 @@ class Ventana:
             self.recargarCaptcha()
             return
         self._labelEstadoCaptcha.set_markup("<b><span color='green'>Texto captcha correcto</span></b>")
-        self._imagenCaptcha.set_from_icon_name("dialog-ok", 48)
+        self._imagenCaptcha.set_from_icon_name("emblem-default", 48)
         self._textoCaptcha.set_text("")
         self._horaSeg = time()
         self._boxOtrasOpciones.show()
