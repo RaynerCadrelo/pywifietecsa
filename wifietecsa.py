@@ -37,8 +37,13 @@ class WifiEtecsa:
         self._raywifi = raywifietecsaclass.RayWifiEtecsa()
         self._cargandoConfig = False
         self._saldo = ""
-        usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
-        contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
+        try:
+            usuario = self._config['USERS']["USER"+self._comboUsuarios.get_active_id()]
+            contrasena = self._config['USERS']["PASS"+self._comboUsuarios.get_active_id()]
+        except:
+            self._comboUsuarios.set_active_id("0")
+            usuario = self._config['USERS']["USER0"]
+            contrasena = self._config['USERS']["PASS0"]
         threading.Thread(target=self.actualizarSaldo, args=(usuario,contrasena, )).start()
 
     def on_loginLogout_button_press_event(self, loginLogout, gparam):
